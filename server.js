@@ -8,6 +8,7 @@ const morgan = require('morgan')
 const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const apiRouter = require('./routes')
 
 // app.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "*");
@@ -34,13 +35,14 @@ app.get('/', function(req, res) {
 });
 
 // Ruta desde el router
-// app.use('/api', apiRouter)
+app.use('/api', apiRouter)
 
-app.set('port', process.env.PORT || 3000)
+// app.set('port', process.env.PORT || 3000)
+const port = process.env.PORT || 3000
 
-app.listen(app.get('port'), () => {
-    console.log(`Running on http://localhost:${app.get('port')}`) //local
-    // console.log(`Running on port: ${port}`) // Heroku
+app.listen(process.env.PORT, () => {
+    console.log(`Running on http://localhost:${port}`) //local
+    // console.log(`Running on port: ${process.env.PORT}`) // Heroku
 })
 
 module.exports = app;
