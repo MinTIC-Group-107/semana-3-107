@@ -25,10 +25,10 @@ exports.signin = async (req, res, next) => {
       if (passwordIsValid) {
         const token = jwt.sign({
           id: user.id,
-          nombre: user.name,
+          name: user.name,
           email: user.email,
-          rol: user.role,
-          imagen: user.image,
+          role: user.role,
+          image: user.image,
           profile: user.profile
         }, config.secret, {
           expiresIn: 86400
@@ -48,12 +48,12 @@ exports.signin = async (req, res, next) => {
       res.status(404).json({
         auth: false,
         accessToken: null,
-        message: 'No existe el usuario en nuestros registros'
+        reason: 'No existe el usuario en nuestros registros'
       })
     }
   } catch (error) {
     res.status(500).send({
-      message: 'Error: '
+      message: 'Error: ' + error
     })
     next(error)
   }
