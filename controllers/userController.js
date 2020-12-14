@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 
 exports.index = async (req, res, next) => {
   try {
-    const users = await models.User.sfindAll()
+    const users = await models.User.findAll()
     res.status(200).json(users)
   } catch (error) {
     res.status(500).send({
