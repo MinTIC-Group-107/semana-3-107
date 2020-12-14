@@ -59,7 +59,7 @@ exports.signin = async (req, res, next) => {
   }
 }
 
-exports.register = async (req, res) => {
+exports.register = async (req, res, next) => {
   req.body.password = bcrypt.hashSync(req.body.password, 10)
   const newUser = await db.User.create(req.body)
   console.log('newUser: ', newUser)
