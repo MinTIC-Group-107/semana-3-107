@@ -5,11 +5,11 @@ const jwt = require('jsonwebtoken')
 
 exports.index = async (req, res, next) => {
   try {
-    const user = await models.User.findAll()
-    res.status(200).json(user)
+    const users = await models.User.sfindAll()
+    res.status(200).json(users)
   } catch (error) {
     res.status(500).send({
-      message: 'Error: '
+      message: 'Error: ->' + error
     })
     next(error)
   }
@@ -27,9 +27,6 @@ exports.signin = async (req, res, next) => {
           id: user.id,
           name: user.name,
           email: user.email,
-          role: user.role,
-          image: user.image,
-          profile: user.profile
         }, config.secret, {
           expiresIn: 86400
         })
@@ -41,14 +38,14 @@ exports.signin = async (req, res, next) => {
         res.status(401).json({
           auth: false,
           accessToken: null,
-          reason: 'Tus credenciales no coinciden con nuestros registros'
+          message: 'Tus credenciales no coinciden con nuestros registros'
         })
       }
     } else {
       res.status(404).json({
         auth: false,
         accessToken: null,
-        reason: 'No existe el usuario en nuestros registros'
+        message: 'No existe el usuario en nuestros registros'
       })
     }
   } catch (error) {
@@ -60,16 +57,32 @@ exports.signin = async (req, res, next) => {
 }
 
 exports.register = async (req, res, next) => {
-  req.body.password = bcrypt.hashSync(req.body.password, 10)
-  const newUser = await db.User.create(req.body)
-  console.log('newUser: ', newUser)
-  if (newUser.dataValues.email) {
-    return res.status(200).json({
-      resultado: 'Registro Exitoso'
+  try {
+    const user = await models.User.findOne({
+      where: {email: req.body.email}
     })
-  } else {
-    return res.status(500).json({
-      error: 'Algo salió mal'
+    if(user) {
+      return res.status(400).json({
+        message: 'El usuario ya existe'
+      })
+    } else {
+      req.body.password = bcrypt.hashSync(req.body.password, 10)
+      const newUser = await models.User.create(req.body)
+      console.log('newUser: ', newUser)
+      if (newUser.dataValues.email) {
+        return res.status(201).json({
+          message: 'Registro Exitoso'
+        })
+      } else {
+        return res.status(500).json({
+          message: 'Algo salió mal'
+        })
+      }
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: 'Error: ' + error
     })
+    next(error)
   }
 }
